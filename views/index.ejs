@@ -15,7 +15,7 @@
       <a href="/users/"><%=texts.USERS_LIST %></a>
       <a href="/logout"><%=texts.LOGOUT %></a>
     </p>
-    <script src="http://www.openlayers.org/api/OpenLayers.js"></script>
+
     <script type="text/javascript">
         function resizeMap () {
           document.getElementById('mapdiv').style.height = ((document.innerHeight || document.documentElement.clientHeight)*(2/3)) + 'px';
@@ -24,30 +24,39 @@
         window.addEventListener('resize', resizeMap);
         resizeMap();
 
-        map = new OpenLayers.Map('mapdiv');
-        map.addLayer(new OpenLayers.Layer.OSM());
+        var data = [{lat: 48.6597597, lng:7.21657276}, {lat: 48.6536776, lng:7.23603487}, {lat: 48.6538884, lng:7.2455978}, {lat: 48.64844489, lng:7.259974478}];
+        var map;
 
-        var markers = new OpenLayers.Layer.Markers('Markers');
-        map.addLayer(markers);
+        function initMap() {
+          var haightAshbury = {lat: 37.769, lng: -122.446};
 
-        function addMarker (p) {
-          var position = new OpenLayers.LonLat(p.long,p.lat)
-                .transform(
-                  new OpenLayers.Projection('EPSG:4326'), // transform from WGS 1984
-                  map.getProjectionObject() // to Spherical Mercator Projection
-                );
-          markers.addMarker(new OpenLayers.Marker(position));
+          map = new google.maps.Map(document.getElementById('mapdiv'), {
+            zoom: 12,
+            mapTypeId: 'terrain'
+          });
 
-          var zoom=15;
-          map.setCenter (position, zoom);
+          
+          data.forEach(addMarker)
         }
 
-
-        addMarker({lat: 48.6597597, long:7.21657276});
-        addMarker({lat: 48.6536776, long:7.23603487});
-
-
-
+        function addMarker(location) {
+          map.setCenter(location);
+          var marker = new google.maps.Marker({
+            position: location,
+            map: map
+          });
+          var path = new google.maps.Polyline({
+            path: data,
+            geodesic: true,
+            strokeColor: '#FF0000',
+            strokeOpacity: 1.0,
+            strokeWeight: 2
+          });
+          path.setMap(map);
+        }
+    </script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=<%=key %>&callback=initMap">
     </script>
   </body>
 </html>

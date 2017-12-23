@@ -10,7 +10,7 @@ router.get('/', function(req, res, next) {
   } else if (!req.isAuthenticated()) {
     res.redirect('/login');
   } else {
-    res.render('index');
+    res.render('index', {key: config.google_maps_api_key});
   }
 });
 
