@@ -1,0 +1,15 @@
+[Unit]
+Description=Bike marauder's map
+After=syslog.target network.target mongodb.service
+
+[Service]
+ExecStart=/home/pi/.nvm/versions/node/v9.3.0/bin/node /node/bike-marauder-s-map/bin/bike-marauder-s-map
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=bike-marauder-s-map
+Environment=NODE_ENV=production PORT=8886
+
+[Install]
+WantedBy=multi-user.target
