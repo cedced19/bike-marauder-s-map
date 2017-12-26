@@ -19,6 +19,7 @@ var LocalStrategy = require('passport-local').Strategy;
 
 var index = require('./routes/index');
 var users = require('./routes/users-api');
+var coords = require('./routes/coords-api');
 
 var app = express();
 
@@ -67,6 +68,7 @@ app.use(passport.session());
 
 app.use('/', index);
 app.use('/users', users);
+app.use('/coords', coords);
 
 var getUser = function (config, email) {
   for (var i in config.users) {

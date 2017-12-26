@@ -11,3 +11,5 @@ Before starting server please define the `google_maps_api_key` and the `hashsecr
   "users": []
 }
 ```
+
+You can get a Google Maps API key [there](https://developers.google.com/maps/documentation/javascript/get-api-key).
