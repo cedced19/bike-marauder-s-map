@@ -6,23 +6,49 @@
     <link rel="manifest" href="/manifest.json">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
-  <body>
-    <h1> Bike marauder's map</h1>
-    <p><%=texts.WELCOME_MSG %> Bike marauder's map.</p>
-    <div id="mapdiv"></div>
-    <p class="footer">
-      <span><%=texts.HOME_PAGE %></span>
-      <a href="/users/"><%=texts.USERS_LIST %></a>
-      <a href="/logout"><%=texts.LOGOUT %></a>
-    </p>
+  <body class="home">
+    <div id="mapdiv" class="map" style="height: 100%"></div>
+    
+    <div class="footer-map">
+      <h1>Bike marauder's map</h1>
+    </div>
 
     <script type="text/javascript">
         function resizeMap () {
-          document.getElementById('mapdiv').style.height = ((document.innerHeight || document.documentElement.clientHeight)*(2/3)) + 'px';
-          document.getElementById('mapdiv').style.width = ((document.innerWidth || document.documentElement.clientWidth)*(0.70)) + 'px';
+          document.getElementById('mapdiv').style.height = ((document.innerHeight || document.documentElement.clientHeight)) + 'px';
         };
         window.addEventListener('resize', resizeMap);
         resizeMap();
+        
+        function MenuControl(controlDiv, map, title, text, cb) {
+
+          var controlUI = document.createElement('div');
+          controlUI.style.backgroundColor = '#fff';
+          controlUI.style.border = '2px solid #fff';
+          controlUI.style.borderRadius = '3px';
+          controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+          controlUI.style.cursor = 'pointer';
+          controlUI.style.marginLeft = '1em';
+          controlUI.style.marginBottom = '1em';
+          controlUI.style.textAlign = 'center';
+          controlUI.title = text;
+          controlDiv.appendChild(controlUI);
+
+          var controlText = document.createElement('div');
+          controlText.style.color = 'rgb(25,25,25)';
+          controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+          controlText.style.fontSize = '16px';
+          controlText.style.lineHeight = '38px';
+          controlText.style.paddingLeft = '5px';
+          controlText.style.paddingRight = '5px';
+          controlText.innerHTML = title;
+          controlUI.appendChild(controlText);
+          
+
+          controlUI.addEventListener('click', cb);
+
+        }
+
         var map, data, lastUpdate;
 
         function initMap() {
@@ -30,7 +56,16 @@
             zoom: 12,
             mapTypeId: 'terrain'
           });
+          var menuControlDiv = document.createElement('div');
+          var menuControl1 = new MenuControl(menuControlDiv, map, '<%=texts.USERS_LIST %>', '<%=texts.GO_TO_USERS_LIST %>', function () {
+              window.location.pathname = '/users';
+          });
+          var menuControl2 = new MenuControl(menuControlDiv, map, '<%=texts.LOGOUT %>', '<%=texts.LOGOUT %>', function () {
+              window.location.pathname = '/logout';
+          });
 
+          menuControlDiv.index = 1;
+          map.controls[google.maps.ControlPosition.LEFT_CENTER].push(menuControlDiv);
           var xhr = new XMLHttpRequest();
           xhr.open('GET', '/coords/');
           xhr.addEventListener('load', function () {
@@ -106,9 +141,6 @@
           }
           return color;
         }
-
-
-
     </script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%=key %>&callback=initMap"></script>
   </body>
