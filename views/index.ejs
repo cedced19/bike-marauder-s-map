@@ -23,9 +23,7 @@
         };
         window.addEventListener('resize', resizeMap);
         resizeMap();
-
-        var data = [{lat: 48.6597597, lng:7.21657276}, {lat: 48.6536776, lng:7.23603487}, {lat: 48.6538884, lng:7.2455978}, {lat: 48.64844489, lng:7.259974478}];
-        var map;
+        var map, data, lastUpdate;
 
         function initMap() {
           map = new google.maps.Map(document.getElementById('mapdiv'), {
@@ -33,8 +31,32 @@
             mapTypeId: 'terrain'
           });
 
-          
-          data.forEach(addMarker)
+          var xhr = new XMLHttpRequest();
+          xhr.open('GET', '/coords/');
+          xhr.addEventListener('load', function () {
+            data = JSON.parse(xhr.response);
+            var people = [];
+            data.forEach(function (obj) {
+              obj.lat = Number(obj.lat);
+              obj.lng = Number(obj.lng);
+              var k = peopleExists(obj, people);
+              if (!k) {
+                people.push({
+                  number: obj.number,
+                  name: obj.contact,
+                  color: getRandomColor(),
+                  path: [{lat:  Number(obj.lat), lng:  Number(obj.lng), date: obj.date}]
+                });
+              } else {
+                people[k].path.push({lat:  Number(obj.lat), lng:  Number(obj.lng), date: obj.date})
+              }
+            });
+            people.forEach(function (person) {
+              addPath(person)
+            });
+            lastUpdate = (new Date()).getTime();
+          });
+          xhr.send();
         }
 
         function addMarker(location) {
@@ -43,15 +65,42 @@
             position: location,
             map: map
           });
+        }
+
+        function addPath (person) {
           var path = new google.maps.Polyline({
-            path: data,
+            path: person.path,
             geodesic: true,
-            strokeColor: '#FF0000',
+            strokeColor: person.color,
             strokeOpacity: 1.0,
             strokeWeight: 2
           });
           path.setMap(map);
+          person.path.forEach(function (location) {
+            addMarker(location);
+          });
+        };
+
+        function peopleExists (obj, people) {
+          for (var k in people) {
+           if (people[k].name == obj.contact){
+             return k;
+           }
+          }
+          return false;
         }
+
+        function getRandomColor() {
+          var letters = '0123456789ABCDEF';
+          var color = '#';
+          for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+          }
+          return color;
+        }
+
+
+
     </script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%=key %>&callback=initMap"></script>
   </body>
