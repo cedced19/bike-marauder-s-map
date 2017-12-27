@@ -59,11 +59,19 @@
           xhr.send();
         }
 
-        function addMarker(location) {
+        function addMarker(location, name, number) {
           map.setCenter(location);
+          var d = (new Date ());
+          d.setTime(location.date);
+          var infowindow = new google.maps.InfoWindow({
+            content: '<h3>' + name + '</h3><p><%=texts.PHONE_NUMBER %>: ' +  number + '</p><p><%=texts.COORDINATES_GOT_AT %>: ' +  d.getHours() + 'h' + d.getMinutes() + '</p>'
+          });
           var marker = new google.maps.Marker({
             position: location,
             map: map
+          });
+          marker.addListener('click', function() {
+            infowindow.open(map, marker);
           });
         }
 
@@ -77,7 +85,7 @@
           });
           path.setMap(map);
           person.path.forEach(function (location) {
-            addMarker(location);
+            addMarker(location, person.name, person.number);
           });
         };
 
