@@ -20,7 +20,7 @@
         window.addEventListener('resize', resizeMap);
         resizeMap();
         
-        function MenuControl(controlDiv, map, title, text, cb) {
+        function Control(controlDiv, map, title, text, cb) {
 
           var controlUI = document.createElement('div');
           controlUI.style.backgroundColor = '#fff';
@@ -29,6 +29,7 @@
           controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
           controlUI.style.cursor = 'pointer';
           controlUI.style.marginLeft = '1em';
+          controlUI.style.marginRight = '1em';
           controlUI.style.marginBottom = '1em';
           controlUI.style.textAlign = 'center';
           controlUI.title = text;
@@ -44,12 +45,11 @@
           controlText.innerHTML = title;
           controlUI.appendChild(controlText);
           
-
           controlUI.addEventListener('click', cb);
 
         }
 
-        var map, data, lastUpdate;
+        var map, data, lastUpdate, people = [];
 
         function initMap() {
           map = new google.maps.Map(document.getElementById('mapdiv'), {
@@ -57,20 +57,36 @@
             mapTypeId: 'terrain'
           });
           var menuControlDiv = document.createElement('div');
-          var menuControl1 = new MenuControl(menuControlDiv, map, '<%=texts.USERS_LIST %>', '<%=texts.GO_TO_USERS_LIST %>', function () {
+          var menuControl1 = new Control(menuControlDiv, map, '<%=texts.USERS_LIST %>', '<%=texts.GO_TO_USERS_LIST %>', function () {
               window.location.pathname = '/users';
           });
-          var menuControl2 = new MenuControl(menuControlDiv, map, '<%=texts.LOGOUT %>', '<%=texts.LOGOUT %>', function () {
+          var menuControl2 = new Control(menuControlDiv, map, '<%=texts.LOGOUT %>', '<%=texts.LOGOUT %>', function () {
               window.location.pathname = '/logout';
+          });
+
+          actionControlDiv = document.createElement('div');
+          var actionDiv1 = new Control(actionControlDiv, map, '<%=texts.REFRESH %>', '<%=texts.REFRESH %>', function () {
+              drawMap(); 
           });
 
           menuControlDiv.index = 1;
           map.controls[google.maps.ControlPosition.LEFT_CENTER].push(menuControlDiv);
+          actionControlDiv.index = 1;
+          map.controls[google.maps.ControlPosition.RIGHT_CENTER].push(actionControlDiv);
+
+          drawMap(); 
+          
+        }
+
+        function drawMap () {
           var xhr = new XMLHttpRequest();
-          xhr.open('GET', '/coords/');
+          if (lastUpdate) {
+            xhr.open('GET', '/coords/sync/' + lastUpdate);
+          } else {
+            xhr.open('GET', '/coords/');
+          }
           xhr.addEventListener('load', function () {
             data = JSON.parse(xhr.response);
-            var people = [];
             data.forEach(function (obj) {
               obj.lat = Number(obj.lat);
               obj.lng = Number(obj.lng);
@@ -99,7 +115,7 @@
           var d = (new Date ());
           d.setTime(location.date);
           var infowindow = new google.maps.InfoWindow({
-            content: '<h3>' + name + '</h3><p><%=texts.PHONE_NUMBER %>: ' +  number + '</p><p><%=texts.COORDINATES_GOT_AT %>: ' +  d.getHours() + 'h' + d.getMinutes() + '</p>'
+            content: '<h3>' + name + '</h3><p><%=texts.PHONE_NUMBER %>: ' +  number + '</p><p><%=texts.COORDINATES_GOT_AT %>: ' +  d.getHours() + 'h' + ((d.getMinutes() < 10) ? '0': '') + d.getMinutes() + '</p>'
           });
           var marker = new google.maps.Marker({
             position: location,

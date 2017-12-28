@@ -23,5 +23,6 @@
   "USER_NOT_DELETED": "User not deleted",
   "USER_NOT_DELETED_MSG": "The user has not been deleted: you can delete your own account.",
   "COORDINATES_GOT_AT": "The coordinates have been received at",
-  "PHONE_NUMBER": "Phone number"
+  "PHONE_NUMBER": "Phone number",
+  "REFRESH": "Refresh"
 }

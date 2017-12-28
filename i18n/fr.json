@@ -23,5 +23,6 @@
   "USER_NOT_DELETED": "Utilisateur non supprimé",
   "USER_NOT_DELETED_MSG": "L'utilisateur n'a pas été supprimé : vous ne pouvez pas supprimer votre propre compte.",
   "COORDINATES_GOT_AT": "Les coordonnées ont été reçu à",
-  "PHONE_NUMBER": "Numéro de téléphone"
+  "PHONE_NUMBER": "Numéro de téléphone",
+  "REFRESH": "Rafraîchir"
 }
